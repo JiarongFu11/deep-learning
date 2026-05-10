@@ -49,8 +49,6 @@ class BatchNormalization():
         
         return grad_input
 
-import numpy as np
-
 def test_bn_layer():
     print("🚀 开始 BN 层工业级测试...\n")
     
