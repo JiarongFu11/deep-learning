@@ -34,8 +34,6 @@ class Attention():
         self.O = self.A @ self.V
         
         return self.O
-        
-        
     
     def backward(self, grad):
         self.grad_V = self.A.T @ grad
@@ -43,5 +41,7 @@ class Attention():
         self.grad_S = self.A * (self.grad_A - np.sum(self.A * self.grad_A, axis=-1, keepdims=True))
         self.grad_Q = (self.grad_S @ self.K) / np.sqrt(self.d_k)
         self.grad_k = self.grad_S.swapaxes(-1,-2) @ self.Q / np.sqrt(self.d_k)
+        
+        return self.Q, self.K, self.V
         
         
