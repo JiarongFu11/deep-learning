@@ -14,9 +14,10 @@ class PositionalEncoding():
     
     def forward(self, x:np.ndarray) -> np.ndarray:
         batch_size, seq_len, d_model = x.shape
+        
         assert seq_len <= self.max_len, f"Input seq_len {seq_len} exceeds max_len {self.max_len}"
         assert d_model == self.d_model, f"Dimension mismatch: expected {self.d_model}, got {d_model}"
+        
         return self.pe[:seq_len] + x
     
-        
         
