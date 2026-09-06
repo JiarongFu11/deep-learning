@@ -36,8 +36,8 @@ class PositionwiseFeedForward():
         dz1_flat = dz1.reshape(-1, self.d_ff)            
         
         self.dW1 = x_flat.T @ dz1_flat                   
-        self.db1 = np.sum(dz1, axis=(0, 1))              
-        dx = dz1 @ self.W1.T                            
+        self.db1 = np.sum(dz1, axis=(0, 1))     
+        dx = dz1 @ self.W1.T    
         
         return dx
         
