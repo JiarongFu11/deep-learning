@@ -1,61 +1,67 @@
 # deep-learning
 
-My notes-in-code for learning deep learning. The idea is to write the basic pieces by hand first (NumPy, or raw PyTorch tensors with autograd), then compare against the built-in PyTorch versions.
+My notes-in-code for learning deep learning. Most of the pieces are written by hand in NumPy, with forward and backward passes, and then rebuilt with PyTorch modules to compare.
 
-Still a work in progress. Some files are placeholders that are empty for now.
+Still a work in progress.
 
 ## Layout
 
 ```
 deep-learning/
-├── dl_numpy/                 # hand-written implementations
+├── dl_numpy/                        # hand-written, NumPy
 │   ├── layers/
-│   │   ├── linear.py         #   linear layer with forward/backward in NumPy, plus a custom nn.Module version
-│   │   ├── cnn.py            #   2D convolution forward pass with plain loops
-│   │   ├── dropout.py        #   dropout from scratch and with nn.Dropout
-│   │   ├── sofmax.py         #   softmax, cross entropy, accuracy
-│   │   ├── activation.py     #   (todo)
-│   │   ├── attention.py      #   (todo)
-│   │   └── normalization.py  #   (todo)
+│   │   ├── linear.py                #   linear layer, forward + backward
+│   │   ├── activation.py            #   Sigmoid, Tanh, ReLU
+│   │   ├── cnn.py                   #   first conv attempt, naive loops, forward only
+│   │   ├── Conv2d.py                #   conv layer with forward + backward
+│   │   ├── batchnormalization.py    #   BatchNorm for 2D and 4D inputs, running stats
+│   │   ├── linear_normalization.py  #   LayerNorm
+│   │   ├── attention.py             #   single-head scaled dot-product attention
+│   │   ├── multi_attention.py       #   multi-head attention, forward + backward
+│   │   ├── masked_mha.py            #   causal masked MHA (forward only so far)
+│   │   ├── positional_encoding.py   #   sinusoidal positional encoding
+│   │   └── positionffn.py           #   position-wise feed-forward
 │   ├── loss/
-│   │   ├── regularization.py #   L1 penalty, L2 via weight_decay
-│   │   └── cross_entropy.py  #   (todo)
-│   ├── models/
-│   │   ├── MLP.py            #   MLP trained from scratch: init, forward, softmax loss, SGD
-│   │   ├── resnet.py         #   (todo)
-│   │   └── transformer.py    #   (todo)
-│   └── optim/
-│       ├── sgd.py            #   (todo)
-│       └── adam.py           #   (todo)
-└── dl_torch/                 # same things using PyTorch modules
-    ├── layers/cnn_torch.py   #   nn.Conv2d version of the conv layer
-    ├── data/ models/ utils/  #   (todo)
-    └── train.py              #   (todo)
+│   │   └── regularization.py        #   L1 penalty, L2 via weight_decay (PyTorch)
+│   └── models/
+│       ├── MLP.py                   #   MLP trained from scratch with autograd tensors + manual SGD
+│       └── transformer_encoder_block.py  # pre-LN encoder block built from the layers above
+└── dl_torch/                        # same ideas with PyTorch modules
+    ├── layers/
+    │   ├── multiheadattention.py    #   MHA with optional mask
+    │   ├── positional_encoding.py
+    │   └── resnet.py                #   ResNet BasicBlock
+    ├── models/
+    │   └── transformer_encoder.py   #   pre-LN encoder block using nn.MultiheadAttention
+    ├── data/ utils/                 #   empty for now
+    └── train.py                     #   empty for now
 ```
 
 ## Setup
 
 ```bash
-pip install numpy torch d2l
+pip install numpy torch
 ```
-
-`d2l` is only used in `dropout.py`.
 
 ## Running
 
-Most files are standalone scripts that run a small example on random data:
+A few files run a small example on random data:
 
 ```bash
-python dl_numpy/models/MLP.py      # trains a 2-layer MLP on random data, prints loss per epoch
+python dl_numpy/models/MLP.py      # 2-layer MLP, prints loss per epoch
 python dl_numpy/layers/linear.py
-python dl_numpy/layers/cnn.py      # slow on purpose, it's a naive loop
-python dl_torch/layers/cnn_torch.py
+python dl_numpy/layers/cnn.py      # slow, it's a naive loop
+```
+
+`transformer_encoder_block.py` uses relative imports, so import it as a package from the repo root:
+
+```python
+from dl_numpy.models.transformer_encoder_block import TransformerEncoderBlock
 ```
 
 ## Plan
 
-- Fill in activations, normalization, attention
-- SGD and Adam optimizers
-- ResNet and Transformer
-- Backward pass for the conv layer
-- A proper training script in `dl_torch/`
+- Backward pass for masked MHA, and fix the backward in `attention.py`
+- Optimizers (SGD, Adam) as their own module
+- A full Transformer and ResNet
+- Data loading and a training script in `dl_torch/`
